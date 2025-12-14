@@ -1,0 +1,14 @@
+// Simple test to fetch tutors from API
+fetch('http://localhost:5000/api/tutors')
+  .then(res => res.json())
+  .then(data => {
+    console.log('API Response:');
+    console.log(`Total tutors: ${data.tutors?.length || 0}`);
+    if (data.tutors) {
+      data.tutors.forEach((t, i) => {
+        console.log(`${i + 1}. ${t.name} - ${t.email}`);
+        console.log(`   Rating: ${t.averageRating || 'N/A'}, Reviews: ${t.totalReviews || 0}`);
+      });
+    }
+  })
+  .catch(err => console.error('Error:', err));
