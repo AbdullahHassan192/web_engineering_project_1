@@ -8,23 +8,30 @@ A full-stack tutoring marketplace platform built with the MERN stack (MongoDB, E
 
 ### For Students
 - **Browse & Search Tutors**: Search by subject, price range, and ratings with real-time filtering
-- **Book Sessions**: Duration-based booking system (1-2.5 hours) with platform selection (Zoom, Google Meet, etc.)
+- **Book Sessions**: Duration-based booking system (1-2.5 hours) with platform selection (Jitsi Meet, Zoom, Google Meet, MS Teams, Skype, Other)
+- **Jitsi Meet Integration**: Automatic video meeting link generation for Jitsi sessions - shared instantly upon booking confirmation
+- **Multiple Reminders**: Get notified at 15, 10, and 5 minutes before your session starts
 - **Personal Dashboard**: View stats, manage bookings, edit profile, and track performance analytics
-- **Real-Time Chat**: Message tutors directly with booking integration
+- **Real-Time Chat**: Message tutors directly with booking integration and clickable meeting links
 - **Review System**: Rate and review tutors after completed sessions, edit reviews
 - **Performance Tracking**: Subject-wise analytics, learning hours, and tutor feedback
 
 ### For Tutors
 - **Professional Dashboard**: Manage profile, subjects, and hourly rates
 - **Booking Management**: Accept/reject booking requests, view upcoming sessions
+- **Jitsi Meet Auto-Setup**: Automatic meeting links for Jitsi sessions - no manual setup needed
+- **Session Reminders**: Receive alerts at 15, 10, and 5 minutes before each session
 - **Student Management**: Track all students you've tutored with detailed stats
 - **Earnings Dashboard**: Financial overview with monthly breakdowns and session history
 - **Real-Time Notifications**: Instant alerts for new booking requests
-- **Chat System**: Communicate with students
+- **Chat System**: Communicate with students with automatic booking confirmations
 
 ### Platform Features
 - **Secure Authentication**: JWT-based auth with bcrypt password hashing
 - **Real-Time Updates**: Socket.io for live notifications and chat
+- **Jitsi Meet Integration**: Automatic video conferencing with instant link generation (default platform)
+- **Smart Notifications**: Triple reminder system (15/10/5 mins) with platform-specific instructions
+- **Multi-Platform Support**: Choose between Jitsi Meet (auto-link), Zoom, Google Meet, MS Teams, Skype, or Other
 - **Review & Rating System**: Students can rate tutors, with voting on helpful reviews
 - **Collision Detection**: Prevents double-booking with time overlap validation
 - **Responsive Design**: Modern dark theme with Tailwind CSS
