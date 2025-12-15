@@ -293,7 +293,24 @@ export default function ChatPage() {
                       <p className={`text-xs font-semibold mb-1 ${isOwn ? 'text-blue-100' : 'text-gray-400'}`}>
                         {isOwn ? 'You' : msg.senderId?.name || 'Unknown'}
                       </p>
-                      <p className="text-sm leading-relaxed break-words">{msg.message}</p>
+                      <p className="text-sm leading-relaxed break-words whitespace-pre-line">
+                        {msg.message.split(/(https?:\/\/[^\s]+)/g).map((part, i) => {
+                          if (part.match(/^https?:\/\//)) {
+                            return (
+                              <a
+                                key={i}
+                                href={part}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={`underline ${isOwn ? 'text-blue-100 hover:text-white' : 'text-blue-400 hover:text-blue-300'}`}
+                              >
+                                {part}
+                              </a>
+                            );
+                          }
+                          return part;
+                        })}
+                      </p>
                       <div className="flex items-center justify-between mt-2">
                         <p className={`text-xs ${isOwn ? 'text-blue-100' : 'text-gray-500'}`}>
                           {formatMessageTime(msg.createdAt)}

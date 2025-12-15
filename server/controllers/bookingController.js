@@ -102,7 +102,7 @@ exports.createBooking = async (req, res) => {
       meetingId,
       status: 'pending',
       subject: subject || '',
-      platform: platform || 'Google Meet'
+      platform: platform || 'Jitsi Meet'
     });
 
     await booking.save();
@@ -121,45 +121,47 @@ exports.createBooking = async (req, res) => {
       booking._id
     );
 
-    // Create chat message if message was provided
-    if (message && message.trim()) {
-      try {
-        // Find or create chat between student and tutor
-        let chat = await Chat.findOne({
+    // Always create chat message for booking request
+    try {
+      // Find or create chat between student and tutor
+      let chat = await Chat.findOne({
+        studentId: studentId,
+        tutorId: tutorId
+      });
+
+      if (!chat) {
+        chat = new Chat({
           studentId: studentId,
+          tutorId: tutorId,
+          messages: []
+        });
+      }
+
+      // Add booking request message with details
+      let bookingMessage = `📅 Booking Request\n\nSubject: ${booking.subject}\nDuration: ${durationHours} ${durationHours === 1 ? 'hour' : 'hours'}\nPlatform: ${booking.platform}\nStart: ${new Date(booking.startTime).toLocaleString()}\nEnd: ${new Date(booking.endTime).toLocaleString()}`;
+      
+      if (message && message.trim()) {
+        bookingMessage += `\n\nMessage: ${message}`;
+      }
+
+      chat.messages.push({
+        senderId: studentId,
+        message: bookingMessage
+      });
+
+      await chat.save();
+
+      // Emit Socket.io event for new chat message
+      if (global.io) {
+        global.io.emit('chat:message', {
+          chatId: chat._id,
+          senderId: studentId,
           tutorId: tutorId
         });
-
-        if (!chat) {
-          chat = new Chat({
-            studentId: studentId,
-            tutorId: tutorId,
-            messages: []
-          });
-        }
-
-        // Add booking request message with details
-        const bookingMessage = `📅 Booking Request\n\nSubject: ${booking.subject}\nDuration: ${durationHours} ${durationHours === 1 ? 'hour' : 'hours'}\nPlatform: ${booking.platform}\nStart: ${new Date(booking.startTime).toLocaleString()}\nEnd: ${new Date(booking.endTime).toLocaleString()}\n\nMessage: ${message}`;
-
-        chat.messages.push({
-          senderId: studentId,
-          message: bookingMessage
-        });
-
-        await chat.save();
-
-        // Emit Socket.io event for new chat message
-        if (global.io) {
-          global.io.emit('chat:message', {
-            chatId: chat._id,
-            senderId: studentId,
-            tutorId: tutorId
-          });
-        }
-      } catch (chatError) {
-        console.error('Error creating chat message:', chatError);
-        // Don't fail the booking if chat creation fails
       }
+    } catch (chatError) {
+      console.error('Error creating chat message:', chatError);
+      // Don't fail the booking if chat creation fails
     }
 
     // Emit Socket.io event for real-time notification
@@ -234,6 +236,12 @@ exports.updateBookingStatus = async (req, res) => {
 
     // Create notifications
     if (status === 'confirmed') {
+      // Generate Jitsi link if platform is Jitsi Meet
+      if (booking.platform === 'Jitsi Meet' && !booking.videoLink) {
+        booking.videoLink = `https://meet.jit.si/${booking.meetingId}`;
+        await booking.save();
+      }
+
       await createNotification(
         booking.studentId._id,
         'booking_confirmed',
@@ -242,6 +250,51 @@ exports.updateBookingStatus = async (req, res) => {
         '',
         booking._id
       );
+      
+      // Create chat message for booking confirmation
+      try {
+        let chat = await Chat.findOne({
+          studentId: booking.studentId._id,
+          tutorId: booking.tutorId._id
+        });
+
+        if (!chat) {
+          chat = new Chat({
+            studentId: booking.studentId._id,
+            tutorId: booking.tutorId._id,
+            messages: []
+          });
+        }
+
+        const durationHours = (new Date(booking.endTime) - new Date(booking.startTime)) / (1000 * 60 * 60);
+        let confirmationMessage = `✅ Booking Confirmed\n\nSubject: ${booking.subject}\nDuration: ${durationHours} ${durationHours === 1 ? 'hour' : 'hours'}\nPlatform: ${booking.platform}\nStart: ${new Date(booking.startTime).toLocaleString()}\nEnd: ${new Date(booking.endTime).toLocaleString()}`;
+        
+        // Include Jitsi link in confirmation message if platform is Jitsi Meet
+        if (booking.platform === 'Jitsi Meet' && booking.videoLink) {
+          confirmationMessage += `\n\n🔗 Meeting Link: ${booking.videoLink}`;
+        }
+        
+        confirmationMessage += `\n\nYour booking has been confirmed by ${booking.tutorId.name}!`;
+
+        chat.messages.push({
+          senderId: booking.tutorId._id,
+          message: confirmationMessage
+        });
+
+        await chat.save();
+
+        // Emit Socket.io event for new chat message
+        if (global.io) {
+          global.io.emit('chat:message', {
+            chatId: chat._id,
+            senderId: booking.tutorId._id,
+            tutorId: booking.tutorId._id
+          });
+        }
+      } catch (chatError) {
+        console.error('Error creating confirmation chat message:', chatError);
+        // Don't fail the confirmation if chat creation fails
+      }
       
       // Emit Socket.io event for real-time update
       if (global.io) {

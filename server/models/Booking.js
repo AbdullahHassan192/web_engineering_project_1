@@ -35,8 +35,8 @@ const bookingSchema = new mongoose.Schema({
   },
   platform: {
     type: String,
-    enum: ['Google Meet', 'Zoom', 'Microsoft Teams', 'Skype', 'Other'],
-    default: 'Google Meet'
+    enum: ['Jitsi Meet', 'Google Meet', 'Zoom', 'Microsoft Teams', 'Skype', 'Other'],
+    default: 'Jitsi Meet'
   },
   videoLink: {
     type: String,
@@ -68,6 +68,11 @@ const bookingSchema = new mongoose.Schema({
       enum: ['pending', 'accepted', 'rejected'],
       default: null
     }
+  },
+  remindersSent: {
+    fifteenMin: { type: Boolean, default: false },
+    tenMin: { type: Boolean, default: false },
+    fiveMin: { type: Boolean, default: false }
   }
 }, {
   timestamps: true

@@ -19,7 +19,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 
 const User = require('./models/User');
-const { scheduleLectureLinks } = require('./controllers/notificationController');
+const { startReminderScheduler } = require('./utils/reminderScheduler');
 const authRoutes = require('./routes/authRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
 const copilotRoutes = require('./routes/copilotRoutes');
@@ -150,11 +150,8 @@ server.listen(PORT, () => {
   console.log(`✓ Server running on port ${PORT}`);
   console.log(`✓ Environment: ${process.env.NODE_ENV || 'development'}`);
   
-  // Schedule notification checker (runs every minute)
-  setInterval(() => {
-    scheduleLectureLinks();
-  }, 60000); // Check every minute
-  console.log(`✓ Notification scheduler started (checks every minute)`);
+  // Start reminder scheduler for 15-minute notifications
+  startReminderScheduler(io);
 });
 
 process.on('SIGTERM', () => {

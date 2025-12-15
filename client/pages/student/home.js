@@ -179,7 +179,7 @@ export default function StudentDashboard() {
       startTime: now.toISOString().slice(0, 16),
       duration: 1,
       subject: tutor.subjects?.[0] || '',
-      platform: 'Google Meet',
+      platform: 'Jitsi Meet',
       message: ''
     });
   };
@@ -702,7 +702,7 @@ export default function StudentDashboard() {
                   Meeting Platform
                 </label>
                 <div className="grid grid-cols-2 gap-2">
-                  {['Google Meet', 'Zoom', 'Microsoft Teams', 'Skype', 'Other'].map((platformOption) => (
+                  {['Jitsi Meet', 'Google Meet', 'Zoom', 'Microsoft Teams', 'Skype', 'Other'].map((platformOption) => (
                     <button
                       key={platformOption}
                       type="button"
