@@ -70,7 +70,7 @@ const chatRateLimiter = rateLimiter({
  */
 const authRateLimiter = rateLimiter({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  maxRequests: 5 // 5 login attempts per 15 minutes
+  maxRequests: 50 // 50 login attempts per 15 minutes
 });
 
 module.exports = {

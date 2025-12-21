@@ -92,7 +92,7 @@ export default function StudentDashboard() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(
+      const response = await axios.patch(
         'http://localhost:5000/api/users/profile',
         { name: editData.name, email: editData.email },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -125,7 +125,7 @@ export default function StudentDashboard() {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.put(
+      await axios.patch(
         'http://localhost:5000/api/users/password',
         {
           currentPassword: passwordChange.currentPassword,

@@ -62,7 +62,7 @@ export default function StudentLogin() {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-[#3B82F6] rounded-full mb-4 mt-4">
               <LogIn className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Student Login</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">Login</h2>
             <p className="text-gray-400">Access your tutoring dashboard</p>
           </div>
 
